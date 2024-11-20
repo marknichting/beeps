@@ -12,10 +12,28 @@ export type MessageType = {
   profilePicture: string;
 };
 
+const getConnectionStatus = (readyState?: number) => {
+  switch (readyState) {
+    case WebSocket.OPEN:
+      return 'Connected';
+    case WebSocket.CONNECTING:
+      return 'Connecting...';
+    case WebSocket.CLOSING:
+      return 'Disconnected';
+    case WebSocket.CLOSED:
+      return 'Disconnected';
+    default:
+      return 'Unknown';
+  }
+};
+
+type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Unknown';
+
 export default function Dashboard() {
   const connection = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<MessageType[]>([]);
   const [totalEvents, setTotalEvents] = useState(0);
+  const [status, setStatus] = useState<ConnectionStatus>('Connecting...');
 
   useEffect(() => {
     const socket = new WebSocket('ws://beeps.gg/stream');
@@ -55,11 +73,14 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="dashboard">
-      <h1>Dashboard</h1>
-      <button onClick={() => connection.current?.close()}>Close</button>
-      <div className="flex">
-        <Sidebar totalEvents={totalEvents} />
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex justify-between items-center">
+        <h1>Dashboard</h1>
+
+        <button onClick={() => connection.current?.close()}>Close</button>
+      </div>
+      <div className="grow flex gap-4 max-h-[calc(100vh-10rem)]">
+        <Sidebar connectionStatus={status} totalEvents={totalEvents} />
         <Feed messages={messages} />
       </div>
     </div>
