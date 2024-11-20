@@ -1,14 +1,17 @@
-interface MessageProps {
-  username: string;
-  message: string;
-  timestamp: string;
-  profilePicture: string;
-}
+import Image from 'next/image';
+import { MessageType } from '@/app/page';
 
-const Message = ({ username, message, timestamp, profilePicture }: MessageProps) => {
+const Message = ({ username, message, timestamp, profilePicture }: MessageType) => {
   return (
     <div className="flex items-center gap-3 p-4 hover:bg-gray-50">
-      <img src={profilePicture} alt={`${username}'s profile`} className="w-10 h-10 rounded-full object-cover" />
+      <Image
+        src={profilePicture}
+        alt={`${username}'s profile`}
+        width={40}
+        height={40}
+        className="w-10 h-10 rounded-full object-cover"
+        unoptimized
+      />
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold">{username}</h3>

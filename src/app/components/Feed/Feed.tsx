@@ -1,17 +1,13 @@
+import { MessageType } from '@/app/page';
 import Message from '../Message';
 
-const message = {
-  username: 'John Doe',
-  message: 'Hello, world!',
-  timestamp: '2021-01-01',
-  profilePicture: 'http://loremflickr.com/201/205/',
-};
-
-const Feed = () => {
+const Feed = ({ messages }: { messages: MessageType[] }) => {
   return (
     <div className="feed">
       <h2>Feed</h2>
-      <Message {...message} />
+      {messages.map((message) => {
+        return <Message key={message.id} {...message} />;
+      })}
     </div>
   );
 };
