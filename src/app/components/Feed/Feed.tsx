@@ -17,33 +17,35 @@ const Feed = ({ messages }: { messages: MessageType[] }) => {
   });
 
   return (
-    <div className="feed bg-slate-200 rounded  overflow-auto p-4	w-full" ref={parentRef}>
+    <div className="feed bg-slate-200 rounded p-4	w-full" ref={parentRef}>
       <h2 className="mb-2">Messages</h2>
-      <div
-        style={{
-          height: `${virtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
-      >
-        {virtualizer.getVirtualItems().map((virtualRow) => {
-          const message = messages[virtualRow.index];
-          return (
-            <Message
-              key={message.id}
-              virtualIndex={virtualRow.index}
-              {...message}
-              refProp={virtualizer.measureElement}
-              virtualStyles={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            />
-          );
-        })}
+      <div className="overflow-auto h-[calc(100%-2.5rem)] w-full" ref={parentRef}>
+        <div
+          style={{
+            height: `${virtualizer.getTotalSize()}px`,
+            width: '100%',
+            position: 'relative',
+          }}
+        >
+          {virtualizer.getVirtualItems().map((virtualRow) => {
+            const message = messages[virtualRow.index];
+            return (
+              <Message
+                key={message.id}
+                virtualIndex={virtualRow.index}
+                {...message}
+                refProp={virtualizer.measureElement}
+                virtualStyles={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

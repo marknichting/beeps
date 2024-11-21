@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Feed from './components/Feed/Feed';
 import Sidebar from './components/Sidebar';
 import useBuffer from './hooks/useBuffer';
+import useScreenSize from './hooks/useScreenSize';
 
 export type MessageType = {
   id: string;
@@ -35,6 +36,7 @@ export default function Dashboard() {
   const timeElapsed = useRef(0);
   const [status, setStatus] = useState<ConnectionStatus>('Connecting...');
   const { bufferState, addMessage } = useBuffer();
+  const isLargerThanMd = useScreenSize('md', true);
 
   useEffect(() => {
     const socket = new WebSocket('ws://beeps.gg/stream');
@@ -80,12 +82,12 @@ export default function Dashboard() {
   }, [addMessage]);
 
   return (
-    <div id="dashboard" className="flex flex-col gap-4 h-full">
+    <div id="dashboard" className="flex flex-col gap-4 h-full max-w-[1000px] mx-auto">
       <div className="flex justify-between items-center">
         <h1>Dashboard</h1>
         <button onClick={() => connection.current?.close()}>Close</button>
       </div>
-      <div className="grow flex gap-4 max-h-[calc(100vh-10rem)]">
+      <div className={`grow flex ${isLargerThanMd ? 'flex-row' : 'flex-col'} gap-4 max-h-[calc(100vh-10rem)]`}>
         <Sidebar
           connectionStatus={status}
           timeElapsed={status === 'Connected' ? Math.round((new Date().getTime() - timeElapsed.current) / 1000) : 0}

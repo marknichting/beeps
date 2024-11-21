@@ -43,7 +43,7 @@ const Message = ({
         onLoad={() => setImageLoaded(true)}
       />
       <div className="flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 justify-between">
           <h3 className="font-semibold">{username}</h3>
           <span className="text-sm text-gray-500">{new Date(timestamp).toLocaleString()}</span>
         </div>
