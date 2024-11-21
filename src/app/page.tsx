@@ -29,7 +29,7 @@ const getConnectionStatus = (readyState?: number) => {
   }
 };
 
-type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Disconnecting' | 'Unknown';
+export type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Disconnecting' | 'Unknown';
 const MAX_RECONNECT_ATTEMPTS = 5;
 const INITIAL_RECONNECT_DELAY = 1000;
 
@@ -43,8 +43,8 @@ export default function Dashboard() {
   const isLargerThanMd = useScreenSize('md', true);
 
   const connect = () => {
-    const socket = new WebSocket('ws://beeps.gg/stream');
-    // const socket = new WebSocket('ws://localhost:8080');
+    // const socket = new WebSocket('ws://beeps.gg/stream');
+    const socket = new WebSocket('ws://localhost:8080');
     connection.current = socket;
 
     // Connection opened
@@ -80,17 +80,16 @@ export default function Dashboard() {
       console.error('error event', event);
     });
     socket.addEventListener('close', (event) => {
-      setStatus('Disconnected');
-      console.log('close event', reconnectAttempts.current);
       if (!event.wasClean && reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
-        // Exponential backoff -> 1s, 2s, 4s, 8s, 16s
         const delay = INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts.current);
         reconnectTimeout.current = setTimeout(() => {
           reconnectAttempts.current += 1;
           setStatus('Connecting...');
           connect();
         }, delay);
+        return;
       }
+      setStatus('Disconnected');
     });
   };
 
@@ -118,7 +117,7 @@ export default function Dashboard() {
           totalEvents={bufferState.eventsCt}
           rate={bufferState.rate}
         />
-        <Feed messages={bufferState.messages} />
+        <Feed messages={bufferState.messages} status={status} />
       </div>
     </div>
   );

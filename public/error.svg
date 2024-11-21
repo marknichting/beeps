@@ -1,0 +1,8 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer circle -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="#ef4444" stroke-width="8"/>
+  
+  <!-- X symbol -->
+  <line x1="32" y1="32" x2="68" y2="68" stroke="#ef4444" stroke-width="8" stroke-linecap="round"/>
+  <line x1="32" y1="68" x2="68" y2="32" stroke="#ef4444" stroke-width="8" stroke-linecap="round"/>
+</svg>
