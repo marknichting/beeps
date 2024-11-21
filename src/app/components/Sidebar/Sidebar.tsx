@@ -1,4 +1,14 @@
-const Sidebar = ({ connectionStatus, totalEvents }: { connectionStatus: string; totalEvents: number }) => {
+const Sidebar = ({
+  connectionStatus,
+  rate,
+  timeElapsed,
+  totalEvents,
+}: {
+  connectionStatus: string;
+  rate: number;
+  timeElapsed: number;
+  totalEvents: number;
+}) => {
   return (
     <div className="border border-gray-200 p-4 h-full bg-slate-200 rounded min-w-[250px]">
       <h2 className="mb-2">Metrics</h2>
@@ -28,7 +38,16 @@ const Sidebar = ({ connectionStatus, totalEvents }: { connectionStatus: string; 
             Events/Minute:
           </span>
           <span aria-labelledby="event-rate-label" className="font-bold">
-            0
+            {rate}
+          </span>
+        </div>
+        <div className="border-b border-gray-300 my-2"></div>
+        <div role="status" aria-live="polite" className="flex justify-between items-center">
+          <span id="time-elapsed-label" className="font-medium text-gray-600">
+            Time Elapsed (in seconds):
+          </span>
+          <span aria-labelledby="time-elapsed-label" className="font-bold">
+            {timeElapsed}
           </span>
         </div>
       </div>
