@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { MessageType } from '../page';
 
-const calculateRate = (messages: MessageType[]) => {
+export const calculateRate = (messages: MessageType[]) => {
   const now = new Date().getTime();
   const oldestMessage = new Date(messages[messages.length - 1]?.timestamp).getTime() || now;
   const timeSinceFirstMessage = now - oldestMessage + 1000;

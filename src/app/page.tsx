@@ -10,7 +10,7 @@ export type MessageType = {
   id: string;
   username: string;
   message: string;
-  timestamp: string;
+  timestamp: number;
   profilePicture: string;
 };
 
@@ -30,21 +30,28 @@ const getConnectionStatus = (readyState?: number) => {
 };
 
 type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Disconnecting' | 'Unknown';
+const MAX_RECONNECT_ATTEMPTS = 5;
+const INITIAL_RECONNECT_DELAY = 1000;
 
 export default function Dashboard() {
   const connection = useRef<WebSocket | null>(null);
   const timeElapsed = useRef(0);
+  const reconnectAttempts = useRef(0);
+  const reconnectTimeout = useRef<NodeJS.Timeout>();
   const [status, setStatus] = useState<ConnectionStatus>('Connecting...');
   const { bufferState, addMessage } = useBuffer();
   const isLargerThanMd = useScreenSize('md', true);
 
-  useEffect(() => {
+  const connect = () => {
     const socket = new WebSocket('ws://beeps.gg/stream');
+    // const socket = new WebSocket('ws://localhost:8080');
     connection.current = socket;
 
     // Connection opened
     const handleOpen = (event: Event) => {
       setStatus('Connected');
+      reconnectAttempts.current = 0;
+      if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
       timeElapsed.current = new Date().getTime();
       if (
         event.currentTarget &&
@@ -55,7 +62,6 @@ export default function Dashboard() {
       }
     };
     socket.addEventListener('open', handleOpen);
-
     // Listen for messages
     const handleMessage = (event: MessageEvent) => {
       if (!event.data) return;
@@ -70,14 +76,32 @@ export default function Dashboard() {
     };
 
     socket.addEventListener('message', handleMessage);
-
-    socket.addEventListener('close', () => {
-      setStatus('Disconnected');
+    socket.addEventListener('error', (event) => {
+      console.error('error event', event);
     });
+    socket.addEventListener('close', (event) => {
+      setStatus('Disconnected');
+      console.log('close event', reconnectAttempts.current);
+      if (!event.wasClean && reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
+        // Exponential backoff -> 1s, 2s, 4s, 8s, 16s
+        const delay = INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts.current);
+        reconnectTimeout.current = setTimeout(() => {
+          reconnectAttempts.current += 1;
+          setStatus('Connecting...');
+          connect();
+        }, delay);
+      }
+    });
+  };
+
+  useEffect(() => {
+    connect();
 
     return () => {
-      if (socket.readyState === WebSocket.OPEN) socket.close();
+      if (connection.current?.readyState === WebSocket.OPEN) connection.current?.close();
+      if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
       connection.current = null;
+      reconnectAttempts.current = 0;
     };
   }, [addMessage]);
 
