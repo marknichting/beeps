@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useReducer, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Feed from './components/Feed/Feed';
 import Sidebar from './components/Sidebar';
+import useBuffer from './hooks/useBuffer';
 
 export type MessageType = {
   id: string;
@@ -29,51 +30,11 @@ const getConnectionStatus = (readyState?: number) => {
 
 type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Disconnecting' | 'Unknown';
 
-type State = {
-  messages: MessageType[];
-  totalEvents: number;
-  rate: number;
-};
-
-const initialState: State = {
-  messages: [],
-  totalEvents: 0,
-  rate: 0,
-};
-
-type Action = {
-  type: 'newMessage' | 'updateRate';
-  payload?: MessageType;
-};
-
-const calculateRate = (state: typeof initialState) => {
-  const now = new Date().getTime();
-  const oldestMessage = new Date(state.messages[state.messages.length - 1]?.timestamp).getTime() || now;
-  const timeSinceFirstMessage = now - oldestMessage + 1000;
-  return Math.trunc(((state.messages.length + 1) / (timeSinceFirstMessage / 60000)) * 100) / 100;
-};
-
-const eventsReducer = (state: typeof initialState, action: Action) => {
-  switch (action.type) {
-    case 'newMessage':
-      if (!action.payload) return state;
-      return {
-        ...state,
-        totalEvents: state.totalEvents + 1,
-        messages: [action.payload, ...state.messages.slice(0, 100)],
-      };
-    case 'updateRate':
-      return { ...state, rate: calculateRate(state) };
-    default:
-      return state;
-  }
-};
-
 export default function Dashboard() {
   const connection = useRef<WebSocket | null>(null);
   const timeElapsed = useRef(0);
   const [status, setStatus] = useState<ConnectionStatus>('Connecting...');
-  const [state, eventsDispatch] = useReducer(eventsReducer, initialState);
+  const { bufferState, addMessage } = useBuffer();
 
   useEffect(() => {
     const socket = new WebSocket('ws://beeps.gg/stream');
@@ -97,15 +58,12 @@ export default function Dashboard() {
     const handleMessage = (event: MessageEvent) => {
       if (!event.data) return;
       const parsedData = JSON.parse(event.data);
-      eventsDispatch({
-        type: 'newMessage',
-        payload: {
-          id: parsedData.id,
-          username: parsedData.user.username,
-          message: parsedData.message,
-          timestamp: parsedData.timestamp,
-          profilePicture: parsedData.user.image_url,
-        },
+      addMessage({
+        id: parsedData.id,
+        username: parsedData.user.username,
+        message: parsedData.message,
+        timestamp: parsedData.timestamp,
+        profilePicture: parsedData.user.image_url,
       });
     };
 
@@ -114,17 +72,12 @@ export default function Dashboard() {
     socket.addEventListener('close', () => {
       setStatus('Disconnected');
     });
-    const rateTimer = setInterval(() => {
-      console.log('rate update');
-      eventsDispatch({ type: 'updateRate' });
-    }, 1000);
 
     return () => {
       if (socket.readyState === WebSocket.OPEN) socket.close();
       connection.current = null;
-      clearInterval(rateTimer);
     };
-  }, []);
+  }, [addMessage]);
 
   return (
     <div id="dashboard" className="flex flex-col gap-4 h-full">
@@ -136,10 +89,10 @@ export default function Dashboard() {
         <Sidebar
           connectionStatus={status}
           timeElapsed={status === 'Connected' ? Math.round((new Date().getTime() - timeElapsed.current) / 1000) : 0}
-          totalEvents={state.totalEvents}
-          rate={state.rate}
+          totalEvents={bufferState.eventsCt}
+          rate={bufferState.rate}
         />
-        <Feed messages={state.messages} />
+        <Feed messages={bufferState.messages} />
       </div>
     </div>
   );
