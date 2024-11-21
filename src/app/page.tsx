@@ -43,8 +43,7 @@ export default function Dashboard() {
   const isLargerThanMd = useScreenSize('md', true);
 
   const connect = () => {
-    // const socket = new WebSocket('ws://beeps.gg/stream');
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('ws://beeps.gg/stream');
     connection.current = socket;
 
     // Connection opened

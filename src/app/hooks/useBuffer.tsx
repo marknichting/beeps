@@ -42,6 +42,7 @@ function useBuffer() {
         rate: calculateRate(bufferObj.messages),
       }));
     }
+    timeoutRef.current = setTimeout(processBuffer, 1000);
   }, []);
 
   const addMessage = useCallback(
@@ -51,7 +52,7 @@ function useBuffer() {
         clearTimeout(timeoutRef.current);
       }
 
-      timeoutRef.current = setTimeout(processBuffer, 750);
+      timeoutRef.current = setTimeout(processBuffer, 100);
     },
     [processBuffer]
   );
