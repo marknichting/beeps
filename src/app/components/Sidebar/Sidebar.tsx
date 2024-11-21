@@ -17,7 +17,7 @@ const Sidebar = ({
           <span id="connection-status-label" className="font-medium text-gray-600">
             Connection Status:
           </span>
-          <span aria-labelledby="connection-status-label" className="font-bold">
+          <span aria-labelledby="connection-status-label" className="font-bold" cy-data="connection-status">
             {connectionStatus}
           </span>
         </div>
@@ -27,7 +27,7 @@ const Sidebar = ({
           <span id="event-count-label" className="font-medium text-gray-600">
             Event Count:
           </span>
-          <span aria-labelledby="event-count-label" className="font-bold">
+          <span aria-labelledby="event-count-label" className="font-bold" cy-data="event-count">
             {totalEvents}
           </span>
         </div>
@@ -37,7 +37,7 @@ const Sidebar = ({
           <span id="event-rate-label" className="font-medium text-gray-600">
             Events/Minute:
           </span>
-          <span aria-labelledby="event-rate-label" className="font-bold">
+          <span aria-labelledby="event-rate-label" className="font-bold" cy-data="event-rate">
             {rate}
           </span>
         </div>
@@ -46,7 +46,7 @@ const Sidebar = ({
           <span id="time-elapsed-label" className="font-medium text-gray-600">
             Time Elapsed (in seconds):
           </span>
-          <span aria-labelledby="time-elapsed-label" className="font-bold">
+          <span aria-labelledby="time-elapsed-label" className="font-bold" cy-data="time-elapsed">
             {timeElapsed}
           </span>
         </div>

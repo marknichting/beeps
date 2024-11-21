@@ -32,6 +32,7 @@ const Message = ({
       style={{ ...virtualStyles, transition: 'opacity 0.1s' }}
       ref={(el) => refProp(el)}
       data-index={virtualIndex}
+      cy-data={`message-${virtualIndex}`}
     >
       <Image
         src={profilePicture}
