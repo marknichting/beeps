@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { MessageType } from '../page';
+import { MessageType } from '@/app/utils';
+
+type BufferState = {
+  messages: MessageType[];
+  eventsCt: number;
+  rate: number;
+};
 
 export const calculateRate = (messages: MessageType[]) => {
   const now = new Date().getTime();
   const oldestMessage = new Date(messages[messages.length - 1]?.timestamp).getTime() || now;
   const timeSinceFirstMessage = now - oldestMessage + 1000;
   return Math.trunc(((messages.length + 1) / (timeSinceFirstMessage / 60000)) * 100) / 100;
-};
-
-type BufferState = {
-  messages: MessageType[];
-  eventsCt: number;
-  rate: number;
 };
 
 function useBuffer() {
@@ -42,6 +42,7 @@ function useBuffer() {
         rate: calculateRate(bufferObj.messages),
       }));
     }
+    // continue processing buffer every second even if there are no messages to update the rate
     timeoutRef.current = setTimeout(processBuffer, 1000);
   }, []);
 
