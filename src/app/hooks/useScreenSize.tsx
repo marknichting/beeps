@@ -16,7 +16,6 @@ const useScreenSize = (breakpoint: Breakpoint, initialValue: boolean) => {
   useEffect(() => {
     const checkSize = () => {
       setIsLargerThan(window.innerWidth >= breakpoints[breakpoint]);
-      console.log('checkSize');
     };
 
     checkSize();

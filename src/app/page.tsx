@@ -77,8 +77,9 @@ export default function Dashboard() {
 
     socket.addEventListener('message', handleMessage);
     socket.addEventListener('error', (event) => {
-      console.error('error event', event);
+      // log error to monitoring service
     });
+
     socket.addEventListener('close', (event) => {
       if (!event.wasClean && reconnectAttempts.current < MAX_RECONNECT_ATTEMPTS) {
         const delay = INITIAL_RECONNECT_DELAY * Math.pow(2, reconnectAttempts.current);
