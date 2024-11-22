@@ -53,7 +53,7 @@ function useBuffer() {
         clearTimeout(timeoutRef.current);
       }
 
-      timeoutRef.current = setTimeout(processBuffer, 100);
+      timeoutRef.current = setTimeout(processBuffer, 500);
     },
     [processBuffer]
   );

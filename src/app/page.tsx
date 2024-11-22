@@ -12,6 +12,7 @@ import {
   INITIAL_RECONNECT_DELAY,
   MAX_RECONNECT_ATTEMPTS,
   initialStatus,
+  preloadImage,
 } from './utils';
 
 export default function Dashboard() {
@@ -45,6 +46,7 @@ export default function Dashboard() {
       if (!event.data) return;
       const parsedData = JSON.parse(event.data);
       console.log('adding message to buffer');
+      preloadImage(parsedData.user.image_url);
       if (isWebSocketMessage(parsedData)) {
         addMessage({
           id: parsedData.id,

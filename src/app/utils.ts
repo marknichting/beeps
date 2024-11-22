@@ -82,3 +82,7 @@ export const statusReducer = (state: typeof initialStatus, action: { type: Conne
 export type ConnectionStatus = 'Connected' | 'Connecting...' | 'Disconnected' | 'Disconnecting' | 'Unknown';
 export const MAX_RECONNECT_ATTEMPTS = 5;
 export const INITIAL_RECONNECT_DELAY = 1000;
+
+export function preloadImage(url: string) {
+  new Image().src = url;
+}
